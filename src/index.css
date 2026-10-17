@@ -391,3 +391,7 @@ input {
     animation: none;
   }
 }
+
+.layout.layout-editor {
+  display: block;
+}

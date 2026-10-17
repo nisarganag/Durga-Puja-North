@@ -1,17 +1,21 @@
 import { useState } from 'react'
-import { MAIN_STOPS, previousStop, type Stop } from '../data/route'
+import { useRouteModel } from '../data/model'
+import type { Stop } from '../data/route'
 import { embedPlaceUrl, embedRouteUrl } from '../lib/maps'
 
 /** Keyless Google Maps embed, used when there's no API key or Google rejects it. */
 export default function EmbedMap({ selected }: { selected: Stop }) {
+  const model = useRouteModel()
   const [whole, setWhole] = useState(false)
-  const prev = previousStop(selected.id)
+  const prev = model.previous(selected.id)
   const showWhole = whole || !selected.place
 
-  let src: string
-  if (showWhole) src = embedRouteUrl(MAIN_STOPS.flatMap((s) => (s.place ? [s.place] : [])), 'walking')
+  const places = model.main.flatMap((s) => (s.place ? [s.place] : []))
+  let src = ''
+  if (showWhole) src = places.length > 1 ? embedRouteUrl(places, 'walking') : places[0] ? embedPlaceUrl(places[0]) : ''
   else if (prev?.place && selected.place) src = embedRouteUrl([prev.place, selected.place], selected.leg?.travel ?? 'walking')
-  else src = embedPlaceUrl(selected.place!)
+  else if (selected.place) src = embedPlaceUrl(selected.place)
+  if (!src) return <div className="embed-map embed-empty">Add locations to this route’s stops to see them on the map.</div>
 
   return (
     <div className="embed-map">

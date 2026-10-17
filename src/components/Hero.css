@@ -44,39 +44,35 @@
 }
 
 /* Teardrop glass, tip pointing down */
-.string-glass,
-.string-glass::after {
+.string-glass {
   position: absolute;
   left: 50%;
   top: 7px;
   width: 13px;
   height: 13px;
   margin-left: -6.5px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-}
-
-.string-glass {
   border: 1px solid rgba(170, 164, 204, 0.42);
+  border-radius: 50% 50% 50% 0;
   background: rgba(247, 239, 226, 0.05);
+  transform: rotate(-45deg);
   transition:
     background 0.4s,
     box-shadow 0.4s,
     border-color 0.4s;
 }
 
-/* Overlay that runs the switch-on sweep when the page loads */
+/* The light-show layer. useLightShow sets its brightness through --glow (0–1). */
 .string-glass::after {
   content: '';
-  left: -1px;
-  top: -1px;
-  margin: 0;
-  transform: none;
-  background: var(--marigold-hot);
-  box-shadow: 0 0 14px 5px rgba(255, 180, 58, 0.65);
-  opacity: 0;
-  animation: string-sweep 1.4s ease-out both;
-  animation-delay: calc(var(--i) * 70ms + 250ms);
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(circle at 60% 40%, #fff8e6 0, var(--marigold-hot) 40%, var(--marigold) 100%);
+  box-shadow:
+    0 0 10px 3px rgba(255, 180, 58, 0.75),
+    0 0 30px 10px rgba(255, 180, 58, 0.28);
+  opacity: var(--glow, 0);
+  will-change: opacity;
 }
 
 .string-bulb.is-done .string-glass {
@@ -87,25 +83,58 @@
     0 0 30px 10px rgba(255, 180, 58, 0.2);
 }
 
+/* Seen bulbs never go dark; the show only adds a white-hot sparkle on top. */
+.string-bulb.is-done .string-glass::after {
+  background: radial-gradient(circle at 60% 40%, #fffdf6 0, #fff0c8 50%, var(--marigold-hot) 100%);
+  box-shadow:
+    0 0 14px 5px rgba(255, 226, 160, 0.8),
+    0 0 38px 12px rgba(255, 200, 110, 0.32);
+}
+
 .string-bulb.is-next .string-glass {
   border-color: var(--sindoor);
   box-shadow: 0 0 10px 1px rgba(239, 74, 58, 0.55);
+}
+
+/* The next stop flashes in sindoor so it stays easy to spot during the show. */
+.string-bulb.is-next .string-glass::after {
+  background: radial-gradient(circle at 60% 40%, #ffd9d2 0, var(--sindoor-soft) 45%, var(--sindoor) 100%);
+  box-shadow:
+    0 0 10px 3px rgba(239, 74, 58, 0.75),
+    0 0 28px 9px rgba(239, 74, 58, 0.28);
 }
 
 .string-bulb.is-skipped .string-glass {
   opacity: 0.35;
 }
 
-@keyframes string-sweep {
-  0% {
-    opacity: 0;
-  }
-  18% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+/* Pause control for the light show */
+.string-wrap {
+  position: relative;
+}
+
+.string-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(21, 18, 58, 0.7);
+  color: var(--haze);
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.string-toggle:hover {
+  border-color: rgba(247, 239, 226, 0.4);
+  color: var(--shola);
 }
 
 .hero-inner {
@@ -179,18 +208,15 @@
     height: 8px;
   }
 
-  .string-glass,
-  .string-glass::after {
+  .string-glass {
     top: 9px;
     width: 18px;
     height: 18px;
     margin-left: -9px;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .string-glass::after {
-    animation: none;
+  .string-toggle {
+    bottom: 14px;
   }
 }
 

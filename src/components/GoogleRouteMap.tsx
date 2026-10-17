@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { PATHS } from '../data/paths'
-import { MAIN_STOPS, STOPS, type Stop } from '../data/route'
+import { useRouteModel } from '../data/model'
+import type { Place, Stop } from '../data/route'
 import { importMapLibraries, loadGoogleMaps, onMapsAuthFailure } from '../lib/googleMaps'
 import { MAP_STYLE } from '../lib/mapStyle'
 import { decodePolyline } from '../lib/polyline'
@@ -26,6 +26,11 @@ interface Positioned extends google.maps.OverlayView {
 }
 
 const COLORS = { marigold: '#ffb43a', sindoor: '#ef4a3a', haze: '#aaa4cc' }
+
+/** Map position of a place, if it has one (custom stops typed without a key don't). */
+function at(place: Place | undefined): google.maps.LatLngLiteral | undefined {
+  return place?.lat !== undefined && place.lng !== undefined ? { lat: place.lat, lng: place.lng } : undefined
+}
 
 /** An HTML element pinned to a map position, so markers can be ordinary React. */
 function pinElement(Base: typeof google.maps.OverlayView, position: google.maps.LatLngLiteral, el: HTMLElement): Positioned {
@@ -86,6 +91,9 @@ function legState(stop: Stop, progress: Progress, nextId: string | undefined): L
 }
 
 export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect, onFail, onNotify }: Props) {
+  // The parent remounts this component when the route changes, so the route at mount is the one to draw.
+  const model = useRouteModel()
+  const modelAtMount = useRef(model)
   const canvas = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<google.maps.Map | null>(null)
   const [markers, setMarkers] = useState<{ stop: Stop; el: HTMLDivElement }[]>([])
@@ -120,27 +128,42 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
           zoom: 14,
         })
 
-        const bounds = new LatLngBounds()
-        MAIN_STOPS.forEach((s) => s.place && bounds.extend(s.place))
-        m.fitBounds(bounds, { top: 48, right: 48, bottom: 200, left: 48 })
+        const { stops, main, paths } = modelAtMount.current
+        const mainPoints = main.flatMap((stop) => at(stop.place) ?? [])
+        const framePoints = mainPoints.length ? mainPoints : stops.flatMap((stop) => at(stop.place) ?? [])
+        if (framePoints.length > 1) {
+          const bounds = new LatLngBounds()
+          framePoints.forEach((point) => bounds.extend(point))
+          m.fitBounds(bounds, { top: 48, right: 48, bottom: 200, left: 48 })
+        } else if (framePoints.length === 1) {
+          m.setCenter(framePoints[0])
+          m.setZoom(16)
+        }
 
-        for (const stop of STOPS) {
-          const path = PATHS[stop.id]
-          if (!path) continue
-          const points = decodePolyline(path.polyline).map(([lat, lng]) => ({ lat, lng }))
-          lines.current[stop.id] = {
-            glow: new Polyline({ map: m, path: points, clickable: false }),
-            main: new Polyline({ map: m, path: points, clickable: false }),
+        // Street paths where we have them, otherwise a straight line from the last stop on the map.
+        let previous: google.maps.LatLngLiteral | undefined
+        for (const stop of stops) {
+          const point = at(stop.place)
+          if (!point) continue
+          const street = paths[stop.id]
+          const line = street ? decodePolyline(street.polyline).map(([lat, lng]) => ({ lat, lng })) : previous ? [previous, point] : null
+          if (line) {
+            lines.current[stop.id] = {
+              glow: new Polyline({ map: m, path: line, clickable: false, geodesic: !street }),
+              main: new Polyline({ map: m, path: line, clickable: false, geodesic: !street }),
+            }
           }
+          previous = point
         }
 
         const made: { stop: Stop; el: HTMLDivElement }[] = []
-        for (const stop of STOPS) {
-          if (!stop.place) continue
+        for (const stop of stops) {
+          const point = at(stop.place)
+          if (!point) continue
           const el = document.createElement('div')
           el.className = 'map-marker'
           OverlayView.preventMapHitsAndGesturesFrom(el)
-          pinElement(OverlayView, stop.place, el).setMap(m)
+          pinElement(OverlayView, point, el).setMap(m)
           made.push({ stop, el })
         }
 
@@ -162,7 +185,7 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
   // Light up the legs as stops get marked.
   useEffect(() => {
     if (!map) return
-    for (const stop of STOPS) {
+    for (const stop of modelAtMount.current.stops) {
       const line = lines.current[stop.id]
       if (!line) continue
       const style = lineStyle(legState(stop, progress, nextId))
@@ -179,9 +202,9 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
       firstSelection.current = false
       return
     }
-    const stop = STOPS.find((s) => s.id === selectedId)
-    if (!stop?.place) return
-    map.panTo(stop.place)
+    const point = at(modelAtMount.current.stops.find((s) => s.id === selectedId)?.place)
+    if (!point) return
+    map.panTo(point)
     if ((map.getZoom() ?? 0) < 15) map.setZoom(16)
   }, [map, selectedId])
 

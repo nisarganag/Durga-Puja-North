@@ -1,4 +1,4 @@
-import { PANDALS, STOPS, type Leg, type Mode, type Stop, type StopKind } from '../data/route'
+import type { Leg, Mode, Stop, StopKind } from '../data/route'
 import { formatMinutes, isDone, isSkipped, type Progress } from './time'
 
 export type StopState = 'done' | 'next' | 'upcoming' | 'skipped'
@@ -7,12 +7,12 @@ export type StopState = 'done' | 'next' | 'upcoming' | 'skipped'
  * The first open stop after the furthest one marked as seen, so a forgotten tap doesn't hold
  * you back. Skips don't move this along: skipping a stop further ahead just gets passed over.
  */
-export function findNext(progress: Progress): Stop | undefined {
+export function findNext(stops: Stop[], progress: Progress): Stop | undefined {
   let last = -1
-  STOPS.forEach((s, i) => {
+  stops.forEach((s, i) => {
     if (isDone(progress, s.id)) last = i
   })
-  return STOPS.slice(last + 1).find((s) => !(s.id in progress))
+  return stops.slice(last + 1).find((s) => !(s.id in progress))
 }
 
 export function stopState(stop: Stop, progress: Progress, nextId: string | undefined): StopState {
@@ -21,8 +21,8 @@ export function stopState(stop: Stop, progress: Progress, nextId: string | undef
   return stop.id === nextId ? 'next' : 'upcoming'
 }
 
-export function seenCount(progress: Progress): number {
-  return PANDALS.filter((p) => isDone(progress, p.id)).length
+export function seenCount(pandals: Stop[], progress: Progress): number {
+  return pandals.filter((p) => isDone(progress, p.id)).length
 }
 
 const MODE_WORD: Record<Mode, string> = {

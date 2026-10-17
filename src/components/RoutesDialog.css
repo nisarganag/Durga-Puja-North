@@ -1,0 +1,131 @@
+.sheet {
+  width: min(560px, 100vw);
+  max-width: 100vw;
+  max-height: min(86svh, 720px);
+  margin: auto auto 0;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid rgba(247, 239, 226, 0.14);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+  background: var(--night-2);
+  color: var(--shola);
+  box-shadow: 0 -20px 50px rgba(6, 4, 24, 0.6);
+}
+
+.sheet::backdrop {
+  background: rgba(8, 6, 28, 0.65);
+  backdrop-filter: blur(3px);
+}
+
+.sheet-body {
+  padding: 22px 20px calc(20px + env(safe-area-inset-bottom));
+}
+
+.sheet-title {
+  font-size: 1.5rem;
+  font-weight: 750;
+  font-stretch: 116%;
+  letter-spacing: -0.01em;
+}
+
+.sheet-sub {
+  margin-top: 4px;
+  font-size: 0.9375rem;
+  color: var(--haze);
+}
+
+.route-options {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.route-option {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--night);
+}
+
+.route-option.is-active {
+  border-color: rgba(255, 180, 58, 0.55);
+}
+
+.route-pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 14px 6px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.route-check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 1.5px solid rgba(170, 164, 204, 0.5);
+  border-radius: 50%;
+  color: #1c1240;
+}
+
+.route-option.is-active .route-check {
+  border-color: var(--marigold);
+  background: var(--marigold);
+}
+
+.route-pick-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.route-pick-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-stretch: 106%;
+  line-height: 1.25;
+}
+
+.route-pick-sub {
+  font-size: 0.875rem;
+  color: var(--haze);
+}
+
+.route-option-actions {
+  display: flex;
+  gap: 14px;
+  padding: 0 14px 10px 48px;
+  font-size: 0.875rem;
+}
+
+.text-btn.danger {
+  color: var(--sindoor-soft);
+}
+
+.sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (min-width: 720px) {
+  .sheet {
+    margin: auto;
+    border-bottom: 1px solid rgba(247, 239, 226, 0.14);
+    border-radius: 22px;
+  }
+
+  .sheet-body {
+    padding: 26px 26px 24px;
+  }
+}

@@ -1,0 +1,342 @@
+.editor {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 48px;
+}
+
+.editor-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -20px 20px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--night);
+}
+
+.editor-bar h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-stretch: 108%;
+  text-align: center;
+}
+
+.editor-title-field {
+  display: grid;
+  gap: 6px;
+}
+
+.editor-title-field .text-input {
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.editor-intro {
+  max-width: 60ch;
+  margin-top: 10px;
+  font-size: 0.9375rem;
+  color: var(--haze);
+}
+
+.editor-errors {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(239, 74, 58, 0.5);
+  border-radius: var(--radius-m);
+  background: rgba(239, 74, 58, 0.1);
+  font-size: 0.9375rem;
+}
+
+.editor-errors p {
+  font-weight: 650;
+}
+
+.editor-errors ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  color: var(--shola-dim);
+}
+
+.editor-stops {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-stop {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--night-2);
+}
+
+.ed-stop.is-open {
+  border-color: rgba(247, 239, 226, 0.22);
+}
+
+.ed-stop-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ed-badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid rgba(170, 164, 204, 0.5);
+  border-radius: 50%;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-stretch: 87.5%;
+  color: var(--haze);
+}
+
+.ed-badge.kind-start,
+.ed-badge.kind-end,
+.ed-badge.kind-home {
+  border-radius: 9px;
+}
+
+.ed-badge.kind-optional {
+  border-style: dashed;
+}
+
+.ed-head-text {
+  display: grid;
+  min-width: 0;
+}
+
+.ed-name {
+  overflow: hidden;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ed-meta {
+  font-size: 0.8125rem;
+  color: var(--haze);
+}
+
+.ed-body {
+  display: grid;
+  gap: 16px;
+  padding: 2px 14px 16px;
+}
+
+.ed-body .field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ed-row {
+  display: grid;
+  gap: 16px;
+}
+
+.ed-note {
+  min-height: 64px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.4;
+}
+
+.ed-kinds,
+.ed-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ed-kinds button,
+.ed-modes button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(247, 239, 226, 0.2);
+  border-radius: 999px;
+  background: none;
+  color: var(--haze);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ed-kinds button[aria-checked='true'],
+.ed-modes button[aria-pressed='true'] {
+  border-color: var(--marigold);
+  background: rgba(255, 180, 58, 0.14);
+  color: var(--marigold);
+}
+
+.ed-place-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.hint.is-ok {
+  color: var(--marigold);
+}
+
+.ed-place-hint .text-btn {
+  font-size: 0.8125rem;
+}
+
+.ed-steps {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px dashed rgba(170, 164, 204, 0.3);
+}
+
+.ed-steps legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.ed-step {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--night);
+}
+
+.ed-step-numbers {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.ed-body .text-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.ed-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(247, 239, 226, 0.2);
+  border-radius: 12px;
+  background: none;
+  color: var(--haze);
+  cursor: pointer;
+}
+
+.ed-icon-btn:hover {
+  color: var(--sindoor-soft);
+}
+
+.ed-stop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.ed-stop-actions .btn {
+  min-height: 38px;
+  padding: 0 12px;
+  font-size: 0.875rem;
+}
+
+.ed-delete:not(:disabled):hover {
+  border-color: rgba(239, 74, 58, 0.6);
+  color: var(--sindoor-soft);
+}
+
+.editor-add {
+  width: 100%;
+  margin-top: 12px;
+  border-style: dashed;
+}
+
+@media (min-width: 560px) {
+  .ed-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 720px) {
+  .editor-bar {
+    margin: 0 -32px 24px;
+    padding: 14px 32px;
+  }
+}
+
+/* Google's place suggestions, restyled for the night theme. The "powered by Google"
+   mark stays visible, as Google's terms require. */
+.pac-container {
+  margin-top: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(247, 239, 226, 0.16);
+  border-radius: 14px;
+  background: #221e55;
+  box-shadow: 0 16px 40px rgba(6, 4, 24, 0.6);
+  font-family: var(--font);
+}
+
+.pac-item {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(170, 164, 204, 0.14);
+  color: var(--haze);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.pac-item:first-child {
+  border-top: 0;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background: rgba(255, 180, 58, 0.12);
+}
+
+.pac-item-query {
+  padding-right: 4px;
+  color: var(--shola);
+  font-size: 0.9375rem;
+}
+
+.pac-matched {
+  color: var(--marigold);
+}
+
+.pac-logo::after {
+  margin: 0;
+  padding: 2px 0;
+  background-color: #f7efe2;
+  background-position: right 10px center;
+}

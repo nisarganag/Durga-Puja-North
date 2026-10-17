@@ -230,3 +230,11 @@
     margin: 0 -32px;
   }
 }
+
+.embed-empty {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--haze);
+  text-align: center;
+}

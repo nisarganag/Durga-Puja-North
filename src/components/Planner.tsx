@@ -1,5 +1,5 @@
+import { useRouteModel } from '../data/model'
 import { formatClock, formatMinutes, legMinutes, toTimeInput, type Plan, type Timing } from '../lib/time'
-import { STOPS } from '../data/route'
 import { MinusIcon, PlusIcon } from './Icons'
 import './Planner.css'
 
@@ -10,12 +10,11 @@ interface Props {
   live: boolean
 }
 
-const tala = STOPS.find((s) => s.id === 'tala')!
-
 export function Planner({ plan, onChange, timings, live }: Props) {
-  const sealdah = timings.sealdah
+  const { start, finish, optional } = useRouteModel()
+  const end = timings[finish.id]
   const setDwell = (dwell: number) => onChange({ ...plan, dwell: Math.min(60, Math.max(5, dwell)) })
-  const talaExtra = (legMinutes(tala.leg) ?? 0) + plan.dwell
+  const optionalExtra = optional.reduce((sum, s) => sum + (legMinutes(s.leg) ?? 0) + plan.dwell, 0)
 
   return (
     <section className="planner" aria-labelledby="planner-title">
@@ -24,7 +23,7 @@ export function Planner({ plan, onChange, timings, live }: Props) {
       </h2>
       <div className="planner-fields">
         <label className="field">
-          <span className="field-label">Leave Shyambazar at</span>
+          <span className="field-label">Leave {start.name || 'the start'} at</span>
           <span className="field-row">
             <input
               type="time"
@@ -52,19 +51,20 @@ export function Planner({ plan, onChange, timings, live }: Props) {
           </span>
         </div>
       </div>
-      {sealdah && (
+      {end && finish !== start && (
         <p className="planner-result">
-          {sealdah.doneAt ? (
+          {end.doneAt ? (
             <>
-              You reached Sealdah at <strong>{formatClock(sealdah.doneAt)}</strong>.
+              You reached {finish.name} at <strong>{formatClock(end.doneAt)}</strong>.
             </>
           ) : (
             <>
-              You’d reach Sealdah around <strong>{formatClock(sealdah.arrive)}</strong>. Tala Prattoy adds about{' '}
-              {formatMinutes(talaExtra)}.
+              You’d reach {finish.name} around <strong>{formatClock(end.arrive)}</strong>.
+              {optional.length === 1 && ` ${optional[0].name} adds about ${formatMinutes(optionalExtra)}.`}
+              {optional.length > 1 && ` The optional stops add about ${formatMinutes(optionalExtra)}.`}
             </>
           )}{' '}
-          {sealdah.doneAt
+          {end.doneAt
             ? null
             : live
               ? 'Times after your last marked stop are worked out from when you marked it.'

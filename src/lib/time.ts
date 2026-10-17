@@ -1,4 +1,4 @@
-import { STOPS, type Leg, type Step } from '../data/route'
+import type { Leg, Step, Stop } from '../data/route'
 
 export interface Plan {
   /** 24-hour "HH:MM" */
@@ -48,14 +48,14 @@ export function isSkipped(progress: Progress, id: string): boolean {
  * Expected arrival at every stop. Starts from the planned departure, and once
  * stops get marked done, everything after the latest mark is re-timed from it.
  */
-export function computeTimings(plan: Plan, progress: Progress, now = Date.now()): Record<string, Timing> {
+export function computeTimings(stops: Stop[], plan: Plan, progress: Progress, now = Date.now()): Record<string, Timing> {
   const [h, m] = plan.start.split(':').map(Number)
   const start = new Date(now)
   start.setHours(h, m, 0, 0)
 
   const out: Record<string, Timing> = {}
   let t = start.getTime()
-  for (const stop of STOPS) {
+  for (const stop of stops) {
     if (isSkipped(progress, stop.id)) continue
     const travel = legMinutes(stop.leg)
     if (travel === undefined) break

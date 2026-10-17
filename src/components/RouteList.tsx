@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
-import { previousStop, STRETCHES, type Leg, type Place, type Step, type Stop, type Stretch } from '../data/route'
+import { useRouteModel } from '../data/model'
+import type { Leg, Place, Step, Stop, Stretch } from '../data/route'
 import { directionsUrl, stretchUrl, waypointUrl } from '../lib/maps'
 import { modeWords, stopState, type StopState } from '../lib/routeState'
 import { formatClock, formatMeters, formatMinutes, legMinutes, type Progress, type Timing } from '../lib/time'
@@ -22,13 +23,14 @@ interface Props {
   onSkip: (id: string) => void
 }
 
-const NUMBER_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six']
+const NUMBER_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
 export function RouteList(props: Props) {
+  const { stretches } = useRouteModel()
   return (
     <div className="route" id="route">
-      {STRETCHES.map((stretch, i) => (
-        <StretchSection key={stretch.id} stretch={stretch} before={STRETCHES[i - 1]} {...props} />
+      {stretches.map((stretch, i) => (
+        <StretchSection key={stretch.id} stretch={stretch} before={stretches[i - 1]} {...props} />
       ))}
     </div>
   )
@@ -50,11 +52,13 @@ function StretchSection({ stretch, before, ...props }: Props & { stretch: Stretc
           <h2 id={`stretch-${stretch.id}`} className="stretch-title">
             {stretch.title}
           </h2>
-          <p className="stretch-sub">
-            {optional
-              ? 'Only if you still have the energy.'
-              : `${NUMBER_WORDS[pandals]} pandal${pandals === 1 ? '' : 's'}, with about ${formatMinutes(travel)} of getting between them.`}
-          </p>
+          {(pandals > 0 || optional) && (
+            <p className="stretch-sub">
+              {pandals === 0
+                ? 'Only if you still have the energy.'
+                : `${NUMBER_WORDS[pandals] ?? pandals} pandal${pandals === 1 ? '' : 's'}, with about ${formatMinutes(travel)} of getting between them.`}
+            </p>
+          )}
           {places.length >= 3 && (
             <a className="text-link stretch-link" href={stretchUrl(places)} target="_blank" rel="noopener noreferrer">
               <MapIcon size={16} />
@@ -80,11 +84,13 @@ function lineState(state: StopState): 'lit' | 'live' | 'dim' {
 
 function StopItem({ stop, ...props }: Props & { stop: Stop }) {
   const { progress, nextId, selectedId, timings } = props
+  const model = useRouteModel()
   const state = stopState(stop, progress, nextId)
   const selected = stop.id === selectedId
-  const prev = previousStop(stop.id)
+  const prev = model.previous(stop.id)
+  const after = model.next(stop.id)
   const timing = timings[stop.id]
-  const nextStopState = nextStopLine(stop, progress, nextId)
+  const nextStopState = after ? lineState(stopState(after, progress, nextId)) : 'none'
 
   return (
     <li className={`stop is-${state} kind-${stop.kind}${selected ? ' is-selected' : ''}`} id={`stop-${stop.id}`}>
@@ -97,11 +103,13 @@ function StopItem({ stop, ...props }: Props & { stop: Stop }) {
           <button type="button" className="stop-head" aria-expanded={selected} onClick={() => props.onSelect(stop.id)}>
             <span className="stop-name">{stop.name}</span>
             <TimeLabel state={state} timing={timing} />
-            <span className="stop-bn" lang="bn">
-              {stop.bn}
-            </span>
+            {stop.bn && (
+              <span className="stop-bn" lang="bn">
+                {stop.bn}
+              </span>
+            )}
           </button>
-          <p className="stop-about">{stop.about}</p>
+          {stop.about && <p className="stop-about">{stop.about}</p>}
           {selected && (
             <div className="stop-detail">
               {stop.kind === 'home' && <HomeAddress key={props.home} home={props.home} onChange={props.onHomeChange} />}
@@ -112,14 +120,6 @@ function StopItem({ stop, ...props }: Props & { stop: Stop }) {
       </div>
     </li>
   )
-}
-
-/** The line below a bulb belongs to the leg that leaves it. */
-function nextStopLine(stop: Stop, progress: Progress, nextId: string | undefined): 'lit' | 'live' | 'dim' | 'none' {
-  const all = STRETCHES.flatMap((s) => s.stops)
-  const after = all[all.findIndex((s) => s.id === stop.id) + 1]
-  if (!after) return 'none'
-  return lineState(stopState(after, progress, nextId))
 }
 
 function TimeLabel({ state, timing }: { state: StopState; timing?: Timing }) {

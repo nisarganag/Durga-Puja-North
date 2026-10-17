@@ -12,7 +12,7 @@ const TIPS = [
   },
   {
     title: 'Expect queues at the big ones',
-    body: 'Muhammad Ali Park and Santosh Mitra Square get long lines after dark. Add time per pandal in the planner if it’s getting slow.',
+    body: 'The famous pujas get long lines after dark. Add time per pandal in the planner if it’s getting slow.',
   },
   {
     title: 'Charge up before you leave',

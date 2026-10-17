@@ -8,8 +8,9 @@ export interface Place {
   query: string
   /** Google place ID, so links open the exact pandal instead of a list of guesses. */
   placeId?: string
-  lat: number
-  lng: number
+  /** Missing for custom stops typed in without a Google Maps key. */
+  lat?: number
+  lng?: number
 }
 
 /** A road or crossing where you change from walking to a bus or auto. */
@@ -56,6 +57,19 @@ export interface Stretch {
   stops: Stop[]
 }
 
+export interface Route {
+  id: string
+  title: string
+  /** Intro line under the title. Generated for custom routes. */
+  lede?: string
+  stops: Stop[]
+  /** Named sections, each starting at a stop. Custom routes get automatic ones. */
+  sections?: { title: string; from: string }[]
+  builtIn?: boolean
+  /** Bumped on every save, so views showing the route can refresh. */
+  updatedAt?: number
+}
+
 const way = {
   girishAve: { label: 'Girish Avenue', query: 'Girish Ave, Shyam Bazar, Kolkata' },
   bagbazarSt: { label: 'Bagbazar Street', query: 'Bagbazar St, Baghbazar, Kolkata' },
@@ -66,7 +80,7 @@ const way = {
   collegeSt: { label: 'College Street', query: 'College St, College Square, Kolkata' },
 } satisfies Record<string, Waypoint>
 
-export const STRETCHES: Stretch[] = [
+const DEFAULT_STRETCHES: Stretch[] = [
   {
     id: 'riverside',
     title: 'Shyambazar and the riverside',
@@ -299,20 +313,14 @@ export const STRETCHES: Stretch[] = [
   },
 ]
 
-export const STOPS: Stop[] = STRETCHES.flatMap((s) => s.stops)
-
-/** Stops on the main route, Shyambazar Metro to Sealdah. */
-export const MAIN_STOPS: Stop[] = STOPS.filter((s) => s.kind === 'start' || s.kind === 'pandal' || s.kind === 'end')
-
-export const PANDALS: Stop[] = STOPS.filter((s) => s.kind === 'pandal')
-
-export function previousStop(id: string): Stop | undefined {
-  const i = STOPS.findIndex((s) => s.id === id)
-  return i > 0 ? STOPS[i - 1] : undefined
+export const DEFAULT_ROUTE: Route = {
+  id: 'north-kolkata',
+  title: 'North Kolkata, pandal by pandal',
+  lede: 'Our Durga Puja route from Shyambazar to Sealdah: eleven pandals, about 5\u00a0km on foot, and buses and autos for the longer hops. Every stop opens straight in Google\u00a0Maps.',
+  stops: DEFAULT_STRETCHES.flatMap((s) => s.stops),
+  sections: DEFAULT_STRETCHES.map((s) => ({ title: s.title, from: s.stops[0].id })),
+  builtIn: true,
 }
 
-/** Display number for pandals (1–11), with Tala Prattoy continuing the count. */
-export function pandalNumber(stop: Stop): number | undefined {
-  if (stop.kind !== 'pandal' && stop.kind !== 'optional') return undefined
-  return STOPS.filter((s) => s.kind === 'pandal' || s.kind === 'optional').indexOf(stop) + 1
-}
+/** The built-in route's stops. scripts/fetch-paths.mjs reads these. */
+export const STOPS: Stop[] = DEFAULT_ROUTE.stops
