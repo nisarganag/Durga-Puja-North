@@ -201,6 +201,11 @@
   cursor: pointer;
 }
 
+.map-fab.is-on {
+  border-color: rgba(111, 211, 255, 0.6);
+  color: var(--you);
+}
+
 @media (max-width: 1023px) {
   .map-panel {
     height: calc(100svh - 64px);

@@ -1,7 +1,7 @@
 import type { Stop } from '../data/route'
 import { directionsUrl, placeUrl } from '../lib/maps'
 import { doneLabels, type StopState } from '../lib/routeState'
-import { CheckIcon, DirectionsIcon, PinIcon, SkipIcon } from './Icons'
+import { CheckIcon, DirectionsIcon, PinIcon, SkipIcon, UndoIcon } from './Icons'
 
 interface Props {
   stop: Stop
@@ -17,7 +17,8 @@ export function StopActions({ stop, state, home, onToggleDone, onSkip }: Props) 
   const done = state === 'done'
   const travel = stop.leg?.travel ?? 'transit'
   const destination = stop.place ?? (home || undefined)
-  const canSkip = onSkip && (stop.kind === 'pandal' || stop.kind === 'optional') && state !== 'done' && state !== 'skipped'
+  const skipped = state === 'skipped'
+  const canSkip = onSkip && (stop.kind === 'pandal' || stop.kind === 'optional') && state !== 'done'
 
   return (
     <div className="actions">
@@ -44,8 +45,8 @@ export function StopActions({ stop, state, home, onToggleDone, onSkip }: Props) 
       </button>
       {canSkip && (
         <button type="button" className="text-btn skip-btn" onClick={() => onSkip(stop.id)}>
-          <SkipIcon size={16} />
-          Skip this one
+          {skipped ? <UndoIcon size={16} /> : <SkipIcon size={16} />}
+          {skipped ? 'Undo skip' : 'Skip this one'}
         </button>
       )}
     </div>

@@ -3,11 +3,14 @@ import { formatMinutes, isDone, isSkipped, type Progress } from './time'
 
 export type StopState = 'done' | 'next' | 'upcoming' | 'skipped'
 
-/** The first open stop after the furthest one marked, so a forgotten tap doesn't hold you back. */
+/**
+ * The first open stop after the furthest one marked as seen, so a forgotten tap doesn't hold
+ * you back. Skips don't move this along: skipping a stop further ahead just gets passed over.
+ */
 export function findNext(progress: Progress): Stop | undefined {
   let last = -1
   STOPS.forEach((s, i) => {
-    if (s.id in progress) last = i
+    if (isDone(progress, s.id)) last = i
   })
   return STOPS.slice(last + 1).find((s) => !(s.id in progress))
 }

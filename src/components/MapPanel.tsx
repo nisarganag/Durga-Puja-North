@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import type { Stop } from '../data/route'
 import { hasMapsKey } from '../lib/googleMaps'
-import { legSummary, stopState } from '../lib/routeState'
+import { doneLabels, legSummary, stopState } from '../lib/routeState'
 import { formatClock, type Progress, type Timing } from '../lib/time'
 import { Bulb } from './Bulb'
 import EmbedMap from './EmbedMap'
@@ -35,7 +35,7 @@ export function MapPanel(props: Props) {
 
   let when = ''
   if (state === 'skipped') when = 'Skipped'
-  else if (timing?.doneAt) when = `${state === 'done' && selected.kind === 'pandal' ? 'Seen' : 'Done'} ${formatClock(timing.doneAt)}`
+  else if (timing?.doneAt) when = `${doneLabels(selected.kind).done} ${formatClock(timing.doneAt)}`
   else if (timing) when = `Around ${formatClock(timing.arrive)}`
 
   return (
@@ -64,7 +64,7 @@ export function MapPanel(props: Props) {
           </div>
         </div>
         {selected.leg && <p className="map-card-how">{legSummary(selected.leg)}</p>}
-        {selected.kind === 'home' && <HomeAddress home={props.home} onChange={props.onHomeChange} />}
+        {selected.kind === 'home' && <HomeAddress key={props.home} home={props.home} onChange={props.onHomeChange} />}
         <StopActions stop={selected} state={state} home={props.home} onToggleDone={props.onToggleDone} onSkip={props.onSkip} />
         {props.next && props.onSelectNext && props.next.id !== selected.id && (
           <button type="button" className="text-btn map-card-next" onClick={props.onSelectNext}>

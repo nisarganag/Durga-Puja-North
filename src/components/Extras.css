@@ -79,6 +79,13 @@
   color: var(--shola);
 }
 
+.footer-sign {
+  margin-top: 18px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--shola);
+}
+
 .toast {
   position: fixed;
   left: 50%;

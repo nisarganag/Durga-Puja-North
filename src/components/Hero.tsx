@@ -59,7 +59,9 @@ export function Hero({ progress, nextId, onShare }: Props) {
           <p className="hero-note">
             {seen === 0
               ? 'Mark each pandal as you see it. The lights above fill in, and your progress stays on this phone.'
-              : `${seen} of ${total} pandals seen so far.`}
+              : seen === total
+                ? `All ${total} pandals seen.`
+                : `${seen} of ${total} pandals seen so far.`}
           </p>
         </div>
       </div>

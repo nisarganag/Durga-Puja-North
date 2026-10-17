@@ -104,7 +104,7 @@ function StopItem({ stop, ...props }: Props & { stop: Stop }) {
           <p className="stop-about">{stop.about}</p>
           {selected && (
             <div className="stop-detail">
-              {stop.kind === 'home' && <HomeAddress home={props.home} onChange={props.onHomeChange} />}
+              {stop.kind === 'home' && <HomeAddress key={props.home} home={props.home} onChange={props.onHomeChange} />}
               <StopActions stop={stop} state={state} home={props.home} onToggleDone={props.onToggleDone} onSkip={props.onSkip} />
             </div>
           )}

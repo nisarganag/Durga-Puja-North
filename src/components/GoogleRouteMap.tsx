@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { PATHS } from '../data/paths'
 import { MAIN_STOPS, STOPS, type Stop } from '../data/route'
-import { loadGoogleMaps, onMapsAuthFailure } from '../lib/googleMaps'
+import { importMapLibraries, loadGoogleMaps, onMapsAuthFailure } from '../lib/googleMaps'
 import { MAP_STYLE } from '../lib/mapStyle'
 import { decodePolyline } from '../lib/polyline'
 import { stopState } from '../lib/routeState'
@@ -93,6 +93,7 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
   const overlayBase = useRef<typeof google.maps.OverlayView | null>(null)
   const you = useRef<{ pin: Positioned; at: google.maps.LatLngLiteral } | null>(null)
   const watchId = useRef<number | null>(null)
+  const [tracking, setTracking] = useState(false)
   const failRef = useRef(onFail)
   useEffect(() => {
     failRef.current = onFail
@@ -105,10 +106,7 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
 
     loadGoogleMaps()
       .then(async () => {
-        const [{ Map, Polyline, OverlayView }, { LatLngBounds }] = await Promise.all([
-          google.maps.importLibrary('maps') as Promise<google.maps.MapsLibrary>,
-          google.maps.importLibrary('core') as Promise<google.maps.CoreLibrary>,
-        ])
+        const [{ Map, Polyline, OverlayView }, { LatLngBounds }] = await importMapLibraries()
         if (cancelled || !canvas.current) return
 
         const m = new Map(canvas.current, {
@@ -189,8 +187,9 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
 
   const locate = () => {
     if (!map || !overlayBase.current) return
-    if (you.current) {
-      map.panTo(you.current.at)
+    // Already tracking, or still waiting for the first fix: never start a second watch.
+    if (watchId.current !== null) {
+      if (you.current) map.panTo(you.current.at)
       return
     }
     if (!('geolocation' in navigator)) {
@@ -198,6 +197,8 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
       return
     }
     const Base = overlayBase.current
+    let warned = false
+    setTracking(true)
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
         const at = { lat: pos.coords.latitude, lng: pos.coords.longitude }
@@ -216,9 +217,20 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
         if ((map.getZoom() ?? 0) < 16) map.setZoom(16)
       },
       (err) => {
-        onNotify(err.code === err.PERMISSION_DENIED ? 'Location is blocked. Allow it in your browser settings to see yourself on the map.' : 'Couldn’t find your location just now.')
-        if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
-        watchId.current = null
+        if (err.code === err.PERMISSION_DENIED) {
+          onNotify('Location is blocked. Allow it in your browser settings to see yourself on the map.')
+          if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
+          watchId.current = null
+          you.current?.pin.setMap(null)
+          you.current = null
+          setTracking(false)
+          return
+        }
+        // Timeouts and lost signal are temporary: the watch keeps trying on its own.
+        if (!you.current && !warned) {
+          warned = true
+          onNotify('Still looking for your location…')
+        }
       },
       { enableHighAccuracy: true, maximumAge: 15_000, timeout: 20_000 },
     )
@@ -243,7 +255,13 @@ export default function GoogleRouteMap({ selectedId, nextId, progress, onSelect,
         ),
       )}
       {map && (
-        <button type="button" className="map-fab" onClick={locate} aria-label="Show where I am">
+        <button
+          type="button"
+          className={`map-fab${tracking ? ' is-on' : ''}`}
+          onClick={locate}
+          aria-label="Show where I am"
+          aria-pressed={tracking}
+        >
           <LocateIcon size={20} />
         </button>
       )}

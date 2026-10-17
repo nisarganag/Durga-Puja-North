@@ -42,12 +42,18 @@ export function Footer({ onReset }: { onReset: () => void }) {
       <p className="footer-bn" lang="bn">
         শুভ শারদীয়া
       </p>
-      <p>Made for our Pujo, 2026. Times are estimates; the crowds decide the rest.</p>
+      <p>For our Pujo, 2026. Times are estimates; the crowds decide the rest.</p>
       <p className="footer-credits">Maps and directions by Google Maps. Street paths © OpenStreetMap contributors.</p>
       <p>
         <button type="button" className="text-btn" onClick={onReset}>
           Clear progress and start over
         </button>
+      </p>
+      <p className="footer-sign">
+        Made by Nisarga with{' '}
+        <span role="img" aria-label="love">
+          ❤️
+        </span>
       </p>
     </footer>
   )

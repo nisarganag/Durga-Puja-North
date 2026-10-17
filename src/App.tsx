@@ -36,6 +36,10 @@ export default function App() {
   const live = Object.values(progress).some((t) => t > 0 && now - t < LIVE_WINDOW)
 
   const [view, setView] = useState<'route' | 'map'>('route')
+  // Once opened on mobile, the map stays mounted so switching back keeps its place
+  // (and doesn't count as another Google map load).
+  const [mapOpened, setMapOpened] = useState(false)
+  if (view === 'map' && !mapOpened) setMapOpened(true)
   const [selectedId, setSelectedId] = useState(nextId ?? 'start')
   const [flickerId, setFlickerId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -70,7 +74,13 @@ export default function App() {
     }
   }
 
-  const skip = (id: string) => setProgress((p) => ({ ...p, [id]: 0 }))
+  const toggleSkip = (id: string) =>
+    setProgress((p) => {
+      const copy = { ...p }
+      if (copy[id] === 0) delete copy[id]
+      else copy[id] = 0
+      return copy
+    })
 
   const reset = () => {
     if (!window.confirm('Clear every marked stop and start over?')) return
@@ -133,7 +143,7 @@ export default function App() {
     onHomeChange: setHome,
     onSelect: (id: string) => select(id),
     onToggleDone: toggleDone,
-    onSkip: skip,
+    onSkip: toggleSkip,
   }
 
   const mapProps = {
@@ -145,7 +155,7 @@ export default function App() {
     onHomeChange: setHome,
     onSelect: (id: string) => select(id, true),
     onToggleDone: toggleDone,
-    onSkip: skip,
+    onSkip: toggleSkip,
     onNotify: notify,
   }
 
@@ -163,14 +173,18 @@ export default function App() {
           {!wide && <div id="view-anchor" />}
           {!wide && <ViewSwitch view={view} onChange={changeView} seen={seenCount(progress)} total={PANDALS.length} />}
           {showRoute && <RouteList {...routeProps} />}
-          {!wide && view === 'map' && <MapPanel {...mapProps} />}
+          {!wide && mapOpened && (
+            <div className="mobile-map" hidden={view !== 'map'}>
+              <MapPanel {...mapProps} />
+            </div>
+          )}
           {!wide && view === 'route' && (
             <NextUpBar
               next={next}
               timing={nextId ? timings[nextId] : undefined}
               home={home}
               onToggleDone={toggleDone}
-              onSkip={skip}
+              onSkip={toggleSkip}
               onAddHome={addHome}
               onReset={reset}
             />

@@ -64,7 +64,11 @@ export function Planner({ plan, onChange, timings, live }: Props) {
               {formatMinutes(talaExtra)}.
             </>
           )}{' '}
-          {live ? 'Times after your last marked stop are worked out from when you marked it.' : 'Times are estimates; puja crowds decide the rest.'}
+          {sealdah.doneAt
+            ? null
+            : live
+              ? 'Times after your last marked stop are worked out from when you marked it.'
+              : 'Times are estimates; puja crowds decide the rest.'}
         </p>
       )}
     </section>

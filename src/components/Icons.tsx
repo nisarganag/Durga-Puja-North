@@ -171,6 +171,13 @@ export const SkipIcon = (p: IconProps) => (
   </Svg>
 )
 
+export const UndoIcon = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+  </Svg>
+)
+
 const MODE_ICONS: Record<Mode, (p: IconProps) => ReactNode> = {
   walk: WalkIcon,
   bus: BusIcon,
