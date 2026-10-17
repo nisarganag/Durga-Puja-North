@@ -1,0 +1,82 @@
+.planner {
+  margin: 4px 0 20px;
+  padding: 18px 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: var(--night-2);
+}
+
+.planner-title {
+  font-size: 1.0625rem;
+  font-weight: 650;
+  font-stretch: 106%;
+}
+
+.planner-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin-top: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-input {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid rgba(247, 239, 226, 0.24);
+  border-radius: 999px;
+}
+
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+}
+
+.stepper button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stepper output {
+  min-width: 64px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.planner-result {
+  max-width: 60ch;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(170, 164, 204, 0.3);
+  font-size: 0.9375rem;
+  color: var(--shola-dim);
+}
+
+.planner-result strong {
+  color: var(--marigold);
+  font-weight: 650;
+}

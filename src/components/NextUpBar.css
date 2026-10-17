@@ -1,0 +1,120 @@
+.nextup {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(247, 239, 226, 0.14);
+  border-radius: 20px;
+  background: rgba(29, 26, 75, 0.97);
+  box-shadow: 0 16px 40px rgba(6, 4, 24, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* A strip of sindoor across the top, like the border of a laal-paar sari. */
+.nextup::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--sindoor);
+}
+
+.nextup-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nextup-text {
+  min-width: 0;
+}
+
+.nextup-name {
+  overflow: hidden;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-stretch: 106%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nextup-lead {
+  margin-right: 4px;
+  color: var(--sindoor-soft);
+  font-weight: 600;
+}
+
+.nextup-how {
+  overflow: hidden;
+  font-size: 0.875rem;
+  color: var(--haze);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nextup-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nextup-actions .btn {
+  width: 100%;
+}
+
+.nextup-skip {
+  grid-column: 1 / -1;
+  justify-self: center;
+  font-size: 0.875rem;
+}
+
+.nextup.is-finished {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.nextup-done {
+  display: grid;
+  font-weight: 600;
+}
+
+.nextup-bn {
+  font-family: var(--font-bn-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--marigold);
+}
+
+@media (min-width: 1024px) {
+  .nextup {
+    position: sticky;
+    left: auto;
+    right: auto;
+    bottom: 20px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    margin-top: 8px;
+    padding: 14px 14px 14px 16px;
+  }
+
+  .nextup-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .nextup-actions .btn {
+    width: auto;
+  }
+
+  .nextup-skip {
+    grid-column: auto;
+  }
+}

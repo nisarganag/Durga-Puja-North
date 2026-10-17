@@ -1,0 +1,227 @@
+.map-panel {
+  position: relative;
+  height: 100%;
+  min-height: 440px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  background: #1b1846;
+}
+
+.gmap,
+.gmap-canvas,
+.embed-map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Google's map container sets its own background; keep ours until tiles draw. */
+.gmap-canvas {
+  background: #1b1846;
+}
+
+/* The info card sits above Google's logo and terms, which must stay visible. */
+.map-card {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 30px;
+  z-index: 2;
+  display: grid;
+  gap: 10px;
+  max-width: 540px;
+  padding: 14px 16px 16px;
+  border: 1px solid rgba(247, 239, 226, 0.12);
+  border-radius: var(--radius-m);
+  background: rgba(21, 18, 58, 0.94);
+  box-shadow: 0 14px 36px rgba(6, 4, 24, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.map-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.map-card-title {
+  min-width: 0;
+}
+
+.map-card-title h3 {
+  font-size: 1.1875rem;
+  font-weight: 700;
+  font-stretch: 106%;
+  line-height: 1.2;
+}
+
+.map-card-title p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  font-size: 0.875rem;
+  color: var(--haze);
+}
+
+.map-card-when {
+  color: var(--shola-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.map-card-how {
+  font-size: 0.9375rem;
+  color: var(--shola-dim);
+}
+
+.map-card .actions {
+  gap: 8px;
+}
+
+.map-card-next {
+  justify-self: start;
+  font-size: 0.875rem;
+}
+
+.map-card .btn {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+}
+
+/* Keyless embed: Google draws its own controls, so the card goes underneath instead of on top. */
+.map-panel.is-embed {
+  display: flex;
+  flex-direction: column;
+}
+
+.embed-map {
+  position: relative;
+  flex: 1;
+  min-height: 300px;
+}
+
+.map-panel.is-embed .map-card {
+  position: static;
+  max-width: none;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.embed-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+/* Markers */
+
+.map-marker {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.marker-btn {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: translate(-50%, -58%);
+}
+
+.marker-btn .bulb-glass {
+  box-shadow: 0 2px 8px rgba(6, 4, 24, 0.6);
+}
+
+.marker-btn .bulb.is-done .bulb-glass {
+  box-shadow:
+    0 0 10px 3px rgba(255, 180, 58, 0.6),
+    0 0 30px 8px rgba(255, 180, 58, 0.22);
+}
+
+.marker-btn.is-selected {
+  z-index: 2;
+}
+
+.marker-btn.is-selected .bulb-glass {
+  transform: scale(1.18);
+}
+
+.marker-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--shola);
+  color: var(--night);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 14px rgba(6, 4, 24, 0.45);
+  pointer-events: none;
+}
+
+.you-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--you);
+  box-shadow: 0 0 0 7px rgba(111, 211, 255, 0.25);
+}
+
+.map-fab {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(247, 239, 226, 0.16);
+  border-radius: 50%;
+  background: rgba(21, 18, 58, 0.92);
+  color: var(--shola);
+  cursor: pointer;
+}
+
+@media (max-width: 1023px) {
+  .map-panel {
+    height: calc(100svh - 64px);
+    min-height: 480px;
+    margin: 0 -20px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+
+  .map-panel.is-embed {
+    height: auto;
+  }
+
+  .map-panel.is-embed .embed-map {
+    height: 62svh;
+    flex: none;
+  }
+}
+
+@media (min-width: 720px) and (max-width: 1023px) {
+  .map-panel {
+    margin: 0 -32px;
+  }
+}

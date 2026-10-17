@@ -1,0 +1,342 @@
+/*
+ * The route is drawn as one continuous wire down the left side.
+ * Every row (stretch heading, travel step, stop) owns a slice of it in its .rail column,
+ * coloured by whether that part of the journey is done (lit), next (live) or still ahead (dim).
+ */
+.route {
+  --rail: 40px;
+  --lit: var(--marigold);
+  --live: rgba(247, 239, 226, 0.8);
+  --dim: rgba(170, 164, 204, 0.3);
+  padding-bottom: 12px;
+}
+
+.stretch-head,
+.step,
+.stop-row {
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  column-gap: 12px;
+}
+
+.stops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rail {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.rail::before,
+.rail::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.line-lit {
+  --c: var(--lit);
+}
+
+.line-live {
+  --c: var(--live);
+}
+
+.line-dim {
+  --c: var(--dim);
+}
+
+/* Stretch headings */
+
+.stretch-head .rail::before {
+  top: 0;
+  bottom: 0;
+  background: var(--c);
+}
+
+.stretch:first-child .stretch-head .rail::before {
+  display: none;
+}
+
+.stretch-text {
+  padding: 30px 0 14px;
+}
+
+.stretch:first-child .stretch-text {
+  padding-top: 8px;
+}
+
+.stretch-title {
+  text-wrap: balance;
+  font-size: 1.625rem;
+  font-weight: 750;
+  font-stretch: 118%;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.stretch-sub {
+  margin-top: 6px;
+  font-size: 0.9375rem;
+  color: var(--haze);
+}
+
+.stretch-link {
+  margin-top: 10px;
+  font-size: 0.9375rem;
+}
+
+/* Travel steps between stops */
+
+.step .rail::before {
+  top: 0;
+  bottom: 0;
+  background: var(--c);
+}
+
+.step.mode-walk .rail::before {
+  width: 4px;
+  background: radial-gradient(circle, var(--c) 1.3px, transparent 1.9px) center top / 4px 8px repeat-y;
+}
+
+.leg.line-lit .rail::before {
+  filter: drop-shadow(0 0 3px rgba(255, 180, 58, 0.75));
+}
+
+.kind-optional .step.mode-ride .rail::before,
+.kind-home .step.mode-ride .rail::before {
+  background: repeating-linear-gradient(to bottom, var(--c) 0 6px, transparent 6px 11px);
+}
+
+.bead {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-top: 7px;
+  border: 1px solid var(--c);
+  border-radius: 50%;
+  background: var(--night);
+  color: var(--shola-dim);
+}
+
+.leg.line-lit .bead {
+  color: var(--marigold);
+}
+
+.leg.line-live .bead {
+  color: var(--shola);
+}
+
+.step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  min-width: 0;
+  padding: 10px 0;
+  font-size: 0.9375rem;
+}
+
+.step-text {
+  color: var(--shola-dim);
+}
+
+.leg.line-live .step-text {
+  color: var(--shola);
+}
+
+.step-meta {
+  display: inline-flex;
+  gap: 10px;
+  font-size: 0.875rem;
+  font-stretch: 87.5%;
+  font-variant-numeric: tabular-nums;
+  color: var(--haze);
+}
+
+.step-or {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: var(--haze);
+}
+
+.waypoint {
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 180, 58, 0.6);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.waypoint:hover {
+  color: var(--marigold);
+}
+
+.step-link .text-link {
+  padding: 2px 0 10px;
+  font-size: 0.9375rem;
+}
+
+/* Stops */
+
+.stop-row .rail::before {
+  top: 0;
+  height: 22px;
+  background: var(--top, transparent);
+}
+
+.stop-row .rail::after {
+  top: 22px;
+  bottom: 0;
+  background: var(--bottom, transparent);
+}
+
+.line-top-lit {
+  --top: var(--lit);
+}
+.line-top-live {
+  --top: var(--live);
+}
+.line-top-dim {
+  --top: var(--dim);
+}
+.line-bottom-lit {
+  --bottom: var(--lit);
+}
+.line-bottom-live {
+  --bottom: var(--live);
+}
+.line-bottom-dim {
+  --bottom: var(--dim);
+}
+
+.stop.kind-start .stop-row .rail::before {
+  display: none;
+}
+
+.stop-row .rail .bulb {
+  z-index: 1;
+}
+
+.stop-body {
+  min-width: 0;
+  padding: 6px 0 22px;
+}
+
+.stop-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 12px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stop-name {
+  font-size: 1.3125rem;
+  font-weight: 700;
+  font-stretch: 106%;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+}
+
+.stop-time {
+  font-size: 0.9375rem;
+  font-stretch: 87.5%;
+  font-variant-numeric: tabular-nums;
+  color: var(--haze);
+  white-space: nowrap;
+}
+
+.stop-time.is-done {
+  color: var(--marigold);
+}
+
+.stop-bn {
+  grid-column: 1 / -1;
+  margin-top: 1px;
+  font-size: 0.9375rem;
+  color: var(--haze);
+}
+
+.stop-about {
+  max-width: 56ch;
+  margin-top: 6px;
+  font-size: 0.9375rem;
+  color: var(--shola-dim);
+}
+
+.stop.is-done .stop-about {
+  color: var(--haze);
+}
+
+.stop-detail {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.stop.is-selected .stop-body {
+  margin: 0 0 18px;
+  padding: 14px 16px 18px;
+  border: 1px solid rgba(247, 239, 226, 0.1);
+  border-radius: var(--radius-m);
+  background: var(--night-2);
+}
+
+.stop.is-selected .stop-row .rail .bulb {
+  margin-top: 8px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.stop-detail .actions .btn {
+  flex: 1 1 auto;
+}
+
+.skip-btn {
+  font-size: 0.875rem;
+}
+
+/* Home address */
+
+.home-form {
+  display: grid;
+  gap: 8px;
+}
+
+.home-row {
+  display: flex;
+  gap: 8px;
+}
+
+.home-row .text-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-saved {
+  font-size: 0.9375rem;
+  color: var(--shola-dim);
+}
+
+.home-saved strong {
+  color: var(--shola);
+}
